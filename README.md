@@ -1,8 +1,22 @@
 # QtDesigner
 Example of Qt Interfaces for Python
 
-exemplo1: Basic Example
-* Convert QTDesing UI to *.py script
+example 1: Basic Example
+* Convert QTDesing UI to *.py script and run
 ```
-python -m PyQt5.uic.pyuic -x exemplo1/qt_tutorial.ui -o exemplo1/qt_tutorial.py
+python -m PyQt5.uic.pyuic -x example1/qt_tutorial.ui -o example1/qt_tutorial.py
+python example1/qt_tutorial.py
 ```
+
+example 2:  Client Control
+
+- Convert QTDesing UI to *.py script and run
+
+  ```
+  python -m PyQt5.uic.pyuic -x example2/clientes.ui -o example2/clientes.py
+  python -m PyQt5.uic.pyuic -x example2/adicionar_clientes.ui -o example2/adicionar_clientes.py
+  python example1/main.py
+  ```
+
+  
+
