@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>888</width>
-    <height>397</height>
+    <width>892</width>
+    <height>393</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,31 +26,56 @@
     <property name="title">
      <string>Clientes</string>
     </property>
-    <widget class="QPushButton" name="add_client">
+    <widget class="QWidget" name="horizontalLayoutWidget">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>20</y>
-       <width>71</width>
-       <height>31</height>
+       <x>10</x>
+       <y>10</y>
+       <width>611</width>
+       <height>41</height>
       </rect>
      </property>
-     <property name="text">
-      <string>Adicionar</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="remove_client">
-     <property name="geometry">
-      <rect>
-       <x>90</x>
-       <y>20</y>
-       <width>71</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Remover</string>
-     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="add_client">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Adicionar Cliente</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="save_clients">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Guardar Cambios</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="remove_client">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Remover cliente</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </widget>
    <widget class="QTableWidget" name="clients_table">
@@ -105,7 +130,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>888</width>
+     <width>892</width>
      <height>22</height>
     </rect>
    </property>

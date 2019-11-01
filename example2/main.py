@@ -26,6 +26,8 @@ class AddNewClient(Ui_AddNewClient):
             if not ruc == 'nan':
                 main_windows.clients_table.setItem(rowPosition, 2, QtWidgets.QTableWidgetItem(ruc))
 
+            container.close()
+
         self.add_client.clicked.connect(add_client)
 
         # Reset Fields
@@ -45,18 +47,57 @@ class ClientsVisualizationUI(Ui_ClientsViewer):
         
     def setupUi(self, parent):
         super().setupUi(parent)
-        df_clients = pd.read_csv(join(self.config['home_path'],'baseclientes.csv'))
+        
+        # Open Database
+        df_clients_path = join(self.config['home_path'],'baseclientes.csv')
+        df_clients = pd.read_csv(df_clients_path)
+
+        # Fill the Table
         for _,row in df_clients.iterrows():
             rowPosition = self.clients_table.rowCount()
             self.clients_table.insertRow(rowPosition)
-
             self.clients_table.setItem(rowPosition, 0, QtWidgets.QTableWidgetItem(str(row['Cliente'])))
             if not str(row['Dirección'])=='nan':
                 self.clients_table.setItem(rowPosition, 1, QtWidgets.QTableWidgetItem(str(row['Dirección'])))
             if not str(row['RUC'])=='nan':
                 self.clients_table.setItem(rowPosition, 2, QtWidgets.QTableWidgetItem(str(int(row['RUC']))))            
         self.clients_table.resizeColumnsToContents()
+
+        # Add Client
         self.add_client.clicked.connect(self.add_client_callback)
+
+        # Remove Client
+        def remove_row():
+            index_list = [QtCore.QPersistentModelIndex(row)
+                            for row in self.clients_table.selectionModel().selectedRows()]
+
+            for index in index_list:
+                self.clients_table.removeRow(index.row())
+
+        self.remove_client.clicked.connect(remove_row)
+
+        # Save Clients Database
+        def save_clients():
+            allRows = self.clients_table.rowCount()
+            new_df = pd.DataFrame(columns=['Cliente','Dirección','RUC'])
+            for row in range(allRows):
+                client = self.clients_table.item(row,0)
+                address = self.clients_table.item(row,1)
+                ruc = self.clients_table.item(row,2)
+                
+                client = client.text() if client else ""
+                address= address.text() if address else ""
+                ruc = ruc.text() if ruc else ""
+                new_df=new_df.append({'Cliente':client, 'Dirección':address, 'RUC':ruc}, ignore_index=True)
+            new_df.to_csv(df_clients_path, index=False)
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Information)
+            msg.setText("Base de datos actualizada")
+            msg.setWindowTitle("Información de Usuario")
+            msg.exec()
+        # TODO: Sorted
+        self.save_clients.clicked.connect(save_clients)
+
         
     def add_client_callback(self):
         diag = QtWidgets.QDialog()
