@@ -1,56 +1,23 @@
-from clientes import Ui_ClientsViewer
-from adicionar_clientes import Ui_AddNewClient
+from clients.clients import Ui_ClientsViewer
+from add_clients.add_clients_model import AddNewClient
 from PyQt5 import QtCore, QtGui, QtWidgets
 import json
 import pandas as pd
 from os.path import join 
-
-class AddNewClient(Ui_AddNewClient):
-    def __init__(self):
-        super(AddNewClient, self).__init__()
-    
-    def binding(self, container, main_windows):
-
-        # Add Client
-        def add_client():
-            rowPosition = main_windows.clients_table.rowCount()
-            main_windows.clients_table.insertRow(rowPosition)
-
-            client_name = self.client_name.text()
-            address = self.address.text()
-            ruc = self.ruc.text()
-
-            main_windows.clients_table.setItem(rowPosition, 0, QtWidgets.QTableWidgetItem(client_name))
-            if not address == 'nan':
-                main_windows.clients_table.setItem(rowPosition, 1, QtWidgets.QTableWidgetItem(address))
-            if not ruc == 'nan':
-                main_windows.clients_table.setItem(rowPosition, 2, QtWidgets.QTableWidgetItem(ruc))
-
-            container.close()
-
-        self.add_client.clicked.connect(add_client)
-
-        # Reset Fields
-        def reset_fileds():
-            for elem in [self.client_name, self.address, self.ruc]:
-                elem.clear()
-        self.reset_fileds.clicked.connect(reset_fileds)
-
-        # Close
-        self.cancel.clicked.connect(lambda : container.close())
+from utils import qt_utils,my_utils
 
 class ClientsVisualizationUI(Ui_ClientsViewer):
     def __init__(self):
         super(ClientsVisualizationUI, self).__init__()      
-        config_path='example2\\config.json'
+        config_path='config.json'
         self.config = json.load(open(config_path, 'rb'))        
-        
+        self.df_clients_path = join(self.config['resource'],'baseclientes.csv')
+
     def setupUi(self, parent):
         super().setupUi(parent)
         
         # Open Database
-        df_clients_path = join(self.config['home_path'],'baseclientes.csv')
-        df_clients = pd.read_csv(df_clients_path)
+        df_clients = pd.read_csv(self.df_clients_path)
 
         # Fill the Table
         for _,row in df_clients.iterrows():
@@ -70,31 +37,15 @@ class ClientsVisualizationUI(Ui_ClientsViewer):
         def remove_row():
             index_list = [QtCore.QPersistentModelIndex(row)
                             for row in self.clients_table.selectionModel().selectedRows()]
-
             for index in index_list:
                 self.clients_table.removeRow(index.row())
-
         self.remove_client.clicked.connect(remove_row)
 
         # Save Clients Database
         def save_clients():
-            allRows = self.clients_table.rowCount()
-            new_df = pd.DataFrame(columns=['Cliente','Dirección','RUC'])
-            for row in range(allRows):
-                client = self.clients_table.item(row,0)
-                address = self.clients_table.item(row,1)
-                ruc = self.clients_table.item(row,2)
-                
-                client = client.text() if client else ""
-                address= address.text() if address else ""
-                ruc = ruc.text() if ruc else ""
-                new_df=new_df.append({'Cliente':client, 'Dirección':address, 'RUC':ruc}, ignore_index=True)
-            new_df.to_csv(df_clients_path, index=False)
-            msg = QtWidgets.QMessageBox()
-            msg.setIcon(QtWidgets.QMessageBox.Information)
-            msg.setText("Base de datos actualizada")
-            msg.setWindowTitle("Información de Usuario")
-            msg.exec()
+            my_utils.write_client_database(self.df_clients_path, self.clients_table)
+            qt_utils.show_message(title="Información de Usuario",\
+                                    text="Base de datos actualizada")
         # TODO: Sorted
         self.save_clients.clicked.connect(save_clients)
 
@@ -106,6 +57,7 @@ class ClientsVisualizationUI(Ui_ClientsViewer):
         ac.binding(diag, self)
         diag.setWindowTitle('Adicionar Nuevo Cliente')
         diag.exec_()
+
 
         
 if __name__ == "__main__":
